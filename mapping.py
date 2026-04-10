@@ -9,18 +9,26 @@ import re
 BLANK_ROWS = {1, 8, 15, 23, 27, 37, 41, 44, 50, 52, 56, 59}
 
 SYNONYMS = {
-    "제품 브로셔":            "제품브로셔",
-    "BLX & TLX":            "BLX&TLX",
-    "BLC & BLX":            "BLX & BLC",
-    "Axiom PX 파노라마":     "Axiom PX파노라마",
-    "Axiom X3 파노라마":     "Axiom X3파노라마",
-    "Integral 파노라마":     "integral 파노라마",
-    "러버블/ 스푼/ 스포이드": "러버블/스푼/스포이드",
-    "x4 더미_TL":           "x4 더미 TL",
-    "x4 더미_BLT":          "x4 더미 BLT",
-    "x4 더미_BLX":          "x4 더미 BLX",
-    "미니배너 (탁자거치)":   "미니배너",
-    "스탠딩배너":            "스탠딩 배너",
+    "제품 브로셔":              "제품브로셔",
+    "BLX & TLX":              "BLX&TLX",
+    "BLC & BLX":              "BLX & BLC",
+    "Axiom PX 파노라마":       "Axiom PX파노라마",
+    "Axiom X3 파노라마":       "Axiom X3파노라마",
+    "Integral 파노라마":       "integral 파노라마",
+    "러버블/ 스푼/ 스포이드":  "러버블/스푼/스포이드",
+    "x4 더미_TL":             "x4 더미 TL",
+    "x4 더미_BLT":            "x4 더미 BLT",
+    "x4 더미_BLX":            "x4 더미 BLX",
+    "미니배너 (탁자거치)":     "미니배너",
+    "스탠딩배너":              "스탠딩 배너",
+    # ✅ 추가: Axiom X3 메가 모델 공백 정규화
+    "Axiom X3 메가 모델":      "Axiom X3 메가모델",
+    # ✅ 추가: Axiom 제품브로셔 공백 정규화
+    "Axiom제품브로셔":         "Axiom 제품브로셔",
+    # ✅ 추가: 회사소개서 공백 정규화
+    "회사소개서":              "회사 소개서",
+    # ✅ 추가: 테이블 배너 변형 정규화
+    "테이블 배너":             "테이블배너",
 }
 
 ROW_DEFINITIONS = {
@@ -92,49 +100,57 @@ ROW_DEFINITIONS = {
 # ─────────────────────────────
 
 def normalize(text):
-    for k, v in SYNONYMS.items():
+    """SYNONYMS 치환 (긴 키 우선 처리)"""
+    for k, v in sorted(SYNONYMS.items(), key=lambda x: -len(x<a href="" class="citation-link" target="_blank" style="vertical-align: super; font-size: 0.8em; margin-left: 3px;">[0]</a>)):
         text = text.replace(k, v)
     return text
 
 def parse_sections(survey_text):
     """
     브랜드_분류 복합키로 섹션 파싱.
-    중복 섹션명 덮어쓰기 방지.
+    ✅ 핵심 수정:
+    - 브랜드 섹션 내부 항목 중 섹션 헤더와 같은 이름이 나와도
+      current_brand 를 기준으로 복합키를 올바르게 생성
+    - 섹션 헤더가 등장할 때 brand 컨텍스트를 유지하며 복합키 생성
+    - 동일한 섹션 헤더명이 여러 브랜드에 등장해도 각각 독립 저장
     """
     BRAND_SECTIONS = {"스트라우만", "앤서지", "바이오머테리얼"}
+
     sections = {}
     current_brand = None
-    current_header = None
+    current_key = None
 
-    for line in survey_text.splitlines():
-        line = line.strip()
+    for raw_line in survey_text.splitlines():
+        line = raw_line.strip()
         if not line:
             continue
+
         if line.endswith(":"):
             header = line[:-1].strip()
+
             if header in BRAND_SECTIONS:
+                # 브랜드 섹션 진입
                 current_brand = header
-                current_header = header
-                key = header
+                current_key = header
             else:
-                current_header = header
-                key = f"{current_brand}_{header}" if current_brand else header
-            if key not in sections:
-                sections[key] = []
-        elif current_header is not None:
-            if current_header in BRAND_SECTIONS:
-                key = current_header
-            else:
-                key = f"{current_brand}_{current_header}" if current_brand else current_header
-            sections[key].append(line)
+                # ✅ 브랜드 컨텍스트 기반 복합키 생성
+                current_key = f"{current_brand}_{header}" if current_brand else header
+
+            # 섹션 초기화 (동일 복합키가 없을 때만)
+            if current_key not in sections:
+                sections[current_key] = []
+
+        else:
+            # 일반 항목 라인
+            if current_key is not None:
+                sections[current_key].append(line)
 
     return sections
 
 def exact_match(item, keyword):
     """
     항목 문자열과 키워드를 완전일치로 비교.
-    대소문자 무시.
-    BLT ≠ BLT 가이드키트, TL ≠ TLX 등 부분일치 완전 차단.
+    대소문자 무시, 앞뒤 공백 제거.
     """
     return item.strip().lower() == keyword.strip().lower()
 
@@ -155,6 +171,11 @@ def check_row(sections, brand, category, item_keyword):
 def generate_output(survey_text):
     survey_text = normalize(survey_text)
     sections = parse_sections(survey_text)
+
+    # 디버깅용 섹션 출력 (필요 시 주석 해제)
+    # for k, v in sections.items():
+    #     print(f"[{k}] → {v}")
+
     results = []
     for row in range(1, 63):
         if row in BLANK_ROWS:
