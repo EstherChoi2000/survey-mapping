@@ -9,44 +9,37 @@ import re
 BLANK_ROWS = {1, 8, 15, 23, 27, 37, 41, 44, 50, 52, 56, 59}
 
 SYNONYMS = {
-    "제품 브로셔":              "제품브로셔",
-    "BLX & TLX":              "BLX&TLX",
-    "BLC & BLX":              "BLX & BLC",
-    "Axiom PX 파노라마":       "Axiom PX파노라마",
-    "Axiom X3 파노라마":       "Axiom X3파노라마",
-    "Integral 파노라마":       "integral 파노라마",
-    "러버블/ 스푼/ 스포이드":  "러버블/스푼/스포이드",
-    "x4 더미_TL":             "x4 더미 TL",
-    "x4 더미_BLT":            "x4 더미 BLT",
-    "x4 더미_BLX":            "x4 더미 BLX",
-    "미니배너 (탁자거치)":     "미니배너",
-    "스탠딩배너":              "스탠딩 배너",
-    # ✅ 추가: Axiom X3 메가 모델 공백 정규화
-    "Axiom X3 메가 모델":      "Axiom X3 메가모델",
-    # ✅ 추가: Axiom 제품브로셔 공백 정규화
-    "Axiom제품브로셔":         "Axiom 제품브로셔",
-    # ✅ 추가: 회사소개서 공백 정규화
-    "회사소개서":              "회사 소개서",
-    # ✅ 추가: 테이블 배너 변형 정규화
-    "테이블 배너":             "테이블배너",
+    "제품 브로셔":             "제품브로셔",
+    "BLX & TLX":             "BLX&TLX",
+    "BLC & BLX":             "BLX & BLC",
+    "Axiom PX 파노라마":      "Axiom PX파노라마",
+    "Axiom X3 파노라마":      "Axiom X3파노라마",
+    "Integral 파노라마":      "integral 파노라마",
+    "러버블/ 스푼/ 스포이드": "러버블/스푼/스포이드",
+    "x4 더미_TL":            "x4 더미 TL",
+    "x4 더미_BLT":           "x4 더미 BLT",
+    "x4 더미_BLX":           "x4 더미 BLX",
+    "미니배너 (탁자거치)":    "미니배너",
+    "스탠딩배너":             "스탠딩 배너",
+    "Axiom X3 메가 모델":     "Axiom X3 메가모델",
+    "Axiom제품브로셔":        "Axiom 제품브로셔",
+    "회사소개서":             "회사 소개서",
+    "테이블 배너":            "테이블배너",
 }
 
 ROW_DEFINITIONS = {
-    # 스트라우만 > 임플란트 모형
     2:  ("스트라우만", "임플란트 모형", "TL"),
     3:  ("스트라우만", "임플란트 모형", "BL"),
     4:  ("스트라우만", "임플란트 모형", "BLT"),
     5:  ("스트라우만", "임플란트 모형", "BLX"),
     6:  ("스트라우만", "임플란트 모형", "TLX"),
     7:  ("스트라우만", "임플란트 모형", "BLX & BLC"),
-    # 스트라우만 > 서지컬 키트
     9:  ("스트라우만", "서지컬 키트", "Full"),
     10: ("스트라우만", "서지컬 키트", "BLT"),
     11: ("스트라우만", "서지컬 키트", "BLX&TLX"),
     12: ("스트라우만", "서지컬 키트", "BLT 가이드키트"),
     13: ("스트라우만", "서지컬 키트", "BLX & TLX 가이드키트"),
     14: ("스트라우만", "서지컬 키트", "iGUIDE 키트"),
-    # 스트라우만 > 제품브로셔
     16: ("스트라우만", "제품브로셔", "BLT"),
     17: ("스트라우만", "제품브로셔", "TL"),
     18: ("스트라우만", "제품브로셔", "BLX"),
@@ -54,11 +47,9 @@ ROW_DEFINITIONS = {
     20: ("스트라우만", "제품브로셔", "BLC"),
     21: ("스트라우만", "제품브로셔", "Roxolid"),
     22: ("스트라우만", "제품브로셔", "SLActive"),
-    # 스트라우만 > 스탠딩 배너
     24: ("스트라우만", "스탠딩 배너", "기업"),
     25: ("스트라우만", "스탠딩 배너", "SLActive"),
     26: ("스트라우만", "스탠딩 배너", "Roxolid"),
-    # 스트라우만 > 기타
     28: ("스트라우만", None, "미니배너"),
     29: ("스트라우만", None, "테이블보"),
     30: ("스트라우만", None, "스탠바이미 모니터"),
@@ -68,28 +59,22 @@ ROW_DEFINITIONS = {
     34: ("스트라우만", None, "x4 더미 BLT"),
     35: ("스트라우만", None, "x4 더미 BLX"),
     36: ("스트라우만", None, "방명록"),
-    # 앤서지 > 임플란트 모형
     38: ("앤서지", "임플란트 모형", "Axiom BL PX/REG"),
     39: ("앤서지", "임플란트 모형", "Axiom X3"),
     40: ("앤서지", "임플란트 모형", "Axiom X3 메가모델"),
-    # 앤서지 > 서지컬 키트
     42: ("앤서지", "서지컬 키트", "Axiom Surgical Kit"),
     43: ("앤서지", "서지컬 키트", "Integral Guide Kit"),
-    # 앤서지 > 제품브로셔
     45: ("앤서지", "제품브로셔", "Axiom 제품브로셔"),
     46: ("앤서지", "제품브로셔", "Axiom PX파노라마"),
     47: ("앤서지", "제품브로셔", "Axiom X3파노라마"),
     48: ("앤서지", "제품브로셔", "integral 파노라마"),
     49: ("앤서지", "제품브로셔", "회사 소개서"),
-    # 앤서지 > 기타
     51: ("앤서지", "기타", "테이블배너"),
-    # 바이오머테리얼 > 데모제품
     53: ("바이오머테리얼", "데모제품", "세라본"),
     54: ("바이오머테리얼", "데모제품", "제이슨 멤브레인"),
     55: ("바이오머테리얼", "데모제품", "엠도게인"),
     57: ("바이오머테리얼", "데모제품", "러버블/스푼/스포이드"),
     58: ("바이오머테리얼", "데모제품", "치아 모델"),
-    # 바이오머테리얼 > 제품브로셔
     60: ("바이오머테리얼", "제품브로셔", "세라본"),
     61: ("바이오머테리얼", "제품브로셔", "제이슨 멤브레인"),
     62: ("바이오머테리얼", "제품브로셔", "엠도게인"),
@@ -100,22 +85,13 @@ ROW_DEFINITIONS = {
 # ─────────────────────────────
 
 def normalize(text):
-    """SYNONYMS 치환 (긴 키 우선 처리)"""
     for k, v in sorted(SYNONYMS.items(), key=lambda x: -len(x<a href="" class="citation-link" target="_blank" style="vertical-align: super; font-size: 0.8em; margin-left: 3px;">[0]</a>)):
         text = text.replace(k, v)
     return text
 
-def parse_sections(survey_text):
-    """
-    브랜드_분류 복합키로 섹션 파싱.
-    ✅ 핵심 수정:
-    - 브랜드 섹션 내부 항목 중 섹션 헤더와 같은 이름이 나와도
-      current_brand 를 기준으로 복합키를 올바르게 생성
-    - 섹션 헤더가 등장할 때 brand 컨텍스트를 유지하며 복합키 생성
-    - 동일한 섹션 헤더명이 여러 브랜드에 등장해도 각각 독립 저장
-    """
-    BRAND_SECTIONS = {"스트라우만", "앤서지", "바이오머테리얼"}
 
+def parse_sections(survey_text):
+    BRAND_SECTIONS = {"스트라우만", "앤서지", "바이오머테리얼"}
     sections = {}
     current_brand = None
     current_key = None
@@ -127,35 +103,26 @@ def parse_sections(survey_text):
 
         if line.endswith(":"):
             header = line[:-1].strip()
-
             if header in BRAND_SECTIONS:
-                # 브랜드 섹션 진입
                 current_brand = header
                 current_key = header
             else:
-                # ✅ 브랜드 컨텍스트 기반 복합키 생성
                 current_key = f"{current_brand}_{header}" if current_brand else header
 
-            # 섹션 초기화 (동일 복합키가 없을 때만)
             if current_key not in sections:
                 sections[current_key] = []
-
         else:
-            # 일반 항목 라인
             if current_key is not None:
                 sections[current_key].append(line)
 
     return sections
 
+
 def exact_match(item, keyword):
-    """
-    항목 문자열과 키워드를 완전일치로 비교.
-    대소문자 무시, 앞뒤 공백 제거.
-    """
     return item.strip().lower() == keyword.strip().lower()
 
+
 def check_row(sections, brand, category, item_keyword):
-    """복합키 기반 섹션에서 항목 완전일치 확인"""
     key = f"{brand}_{category}" if category else brand
     if key not in sections:
         return "0"
@@ -171,11 +138,6 @@ def check_row(sections, brand, category, item_keyword):
 def generate_output(survey_text):
     survey_text = normalize(survey_text)
     sections = parse_sections(survey_text)
-
-    # 디버깅용 섹션 출력 (필요 시 주석 해제)
-    # for k, v in sections.items():
-    #     print(f"[{k}] → {v}")
-
     results = []
     for row in range(1, 63):
         if row in BLANK_ROWS:
@@ -201,4 +163,4 @@ if __name__ == "__main__":
     with open("output.txt", "w", encoding="utf-8") as f:
         f.write(output)
 
-    print("\n✅ output.txt 저장 완료")
+    print("\n output.txt 저장 완료")
