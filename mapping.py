@@ -3,22 +3,22 @@ import re
 BLANK_ROWS = {1, 8, 15, 23, 27, 37, 41, 44, 50, 52, 56, 59}
 
 SYNONYMS = {
-    "제품 브로셔": "제품브로셔",
-    "BLX & TLX": "BLX&TLX",
-    "BLC & BLX": "BLX & BLC",
+    "Axiom X3 메가 모델": "Axiom X3 메가모델",
+    "미니배너 (탁자거치)": "미니배너",
+    "러버블/ 스푼/ 스포이드": "러버블/스푼/스포이드",
     "Axiom PX 파노라마": "Axiom PX파노라마",
     "Axiom X3 파노라마": "Axiom X3파노라마",
     "Integral 파노라마": "integral 파노라마",
-    "러버블/ 스푼/ 스포이드": "러버블/스푼/스포이드",
+    "Axiom제품브로셔": "Axiom 제품브로셔",
+    "제품 브로셔": "제품브로셔",
+    "BLX & TLX": "BLX&TLX",
+    "BLC & BLX": "BLX & BLC",
+    "스탠딩배너": "스탠딩 배너",
+    "테이블 배너": "테이블배너",
     "x4 더미_TL": "x4 더미 TL",
     "x4 더미_BLT": "x4 더미 BLT",
     "x4 더미_BLX": "x4 더미 BLX",
-    "미니배너 (탁자거치)": "미니배너",
-    "스탠딩배너": "스탠딩 배너",
-    "Axiom X3 메가 모델": "Axiom X3 메가모델",
-    "Axiom제품브로셔": "Axiom 제품브로셔",
     "회사소개서": "회사 소개서",
-    "테이블 배너": "테이블배너",
 }
 
 ROW_DEFINITIONS = {
@@ -76,8 +76,9 @@ ROW_DEFINITIONS = {
 
 
 def normalize(text):
-    for k, v in sorted (SYNONYMS. items(), key=lambda x:-len(x<a href="" class="citation-link" target="blank" style="vertical-align: super; font-size: 0.8em; margin-left:spx;">[0]</a>)):
-
+    for k, v in sorted(SYNONYMS.items(), key=lambda x: -len(x<a href="" class="citation-link" target="_blank" style="vertical-align: super; font-size: 0.8em; margin-left: 3px;">[0]</a>)):
+        text = text.replace(k, v)
+    return text
 
 
 def parse_sections(survey_text):
