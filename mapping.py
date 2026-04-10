@@ -76,9 +76,8 @@ ROW_DEFINITIONS = {
 
 
 def normalize(text):
-    for k, v in sorted(SYNONYMS.items(), key=lambda x: -len(x<a href="" class="citation-link" target="_blank" style="vertical-align: super; font-size: 0.8em; margin-left: 3px;">[0]</a>)):
-        text = text.replace(k, v)
-    return text
+    for k, v in sorted (SYNONYMS. items(), key=lambda x:-len(x<a href="" class="citation-link" target="blank" style="vertical-align: super; font-size: 0.8em; margin-left:spx;">[0]</a>)):
+
 
 
 def parse_sections(survey_text):
