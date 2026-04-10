@@ -1,30 +1,24 @@
-# mapping.py
-
 import re
-
-# ─────────────────────────────
-# 1. 설정값
-# ─────────────────────────────
 
 BLANK_ROWS = {1, 8, 15, 23, 27, 37, 41, 44, 50, 52, 56, 59}
 
 SYNONYMS = {
-    "제품 브로셔":             "제품브로셔",
-    "BLX & TLX":             "BLX&TLX",
-    "BLC & BLX":             "BLX & BLC",
-    "Axiom PX 파노라마":      "Axiom PX파노라마",
-    "Axiom X3 파노라마":      "Axiom X3파노라마",
-    "Integral 파노라마":      "integral 파노라마",
+    "제품 브로셔": "제품브로셔",
+    "BLX & TLX": "BLX&TLX",
+    "BLC & BLX": "BLX & BLC",
+    "Axiom PX 파노라마": "Axiom PX파노라마",
+    "Axiom X3 파노라마": "Axiom X3파노라마",
+    "Integral 파노라마": "integral 파노라마",
     "러버블/ 스푼/ 스포이드": "러버블/스푼/스포이드",
-    "x4 더미_TL":            "x4 더미 TL",
-    "x4 더미_BLT":           "x4 더미 BLT",
-    "x4 더미_BLX":           "x4 더미 BLX",
-    "미니배너 (탁자거치)":    "미니배너",
-    "스탠딩배너":             "스탠딩 배너",
-    "Axiom X3 메가 모델":     "Axiom X3 메가모델",
-    "Axiom제품브로셔":        "Axiom 제품브로셔",
-    "회사소개서":             "회사 소개서",
-    "테이블 배너":            "테이블배너",
+    "x4 더미_TL": "x4 더미 TL",
+    "x4 더미_BLT": "x4 더미 BLT",
+    "x4 더미_BLX": "x4 더미 BLX",
+    "미니배너 (탁자거치)": "미니배너",
+    "스탠딩배너": "스탠딩 배너",
+    "Axiom X3 메가 모델": "Axiom X3 메가모델",
+    "Axiom제품브로셔": "Axiom 제품브로셔",
+    "회사소개서": "회사 소개서",
+    "테이블 배너": "테이블배너",
 }
 
 ROW_DEFINITIONS = {
@@ -80,9 +74,6 @@ ROW_DEFINITIONS = {
     62: ("바이오머테리얼", "제품브로셔", "엠도게인"),
 }
 
-# ─────────────────────────────
-# 2. 핵심 함수
-# ─────────────────────────────
 
 def normalize(text):
     for k, v in sorted(SYNONYMS.items(), key=lambda x: -len(x<a href="" class="citation-link" target="_blank" style="vertical-align: super; font-size: 0.8em; margin-left: 3px;">[0]</a>)):
@@ -131,9 +122,6 @@ def check_row(sections, brand, category, item_keyword):
             return "1"
     return "0"
 
-# ─────────────────────────────
-# 3. 출력 생성
-# ─────────────────────────────
 
 def generate_output(survey_text):
     survey_text = normalize(survey_text)
@@ -149,18 +137,12 @@ def generate_output(survey_text):
             results.append("0")
     return "\n".join(results)
 
-# ─────────────────────────────
-# 4. 실행
-# ─────────────────────────────
 
 if __name__ == "__main__":
     with open("survey_input.txt", "r", encoding="utf-8") as f:
         survey = f.read()
-
     output = generate_output(survey)
     print(output)
-
     with open("output.txt", "w", encoding="utf-8") as f:
         f.write(output)
-
-    print("\n output.txt 저장 완료")
+    print("output.txt saved")
